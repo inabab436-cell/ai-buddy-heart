@@ -510,7 +510,7 @@ function ColorChips({
   onPick: (gkey: string) => void;
 }) {
   if (options.length === 0) {
-    return <p className="mt-1 text-center text-[10px] text-muted-foreground">أضف الألوان بالأسفل لربطها</p>;
+    return <p className="mt-1 text-center text-[10px] text-muted-foreground">أضف الألوان أدناه لربطها</p>;
   }
   return (
     <div className="mt-1.5 flex flex-wrap justify-center gap-1">
