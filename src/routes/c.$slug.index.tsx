@@ -906,7 +906,7 @@ function CartDrawer({
     onSuccess: (res) => {
       if (res.ok === false) {
         if (res.error === "login_required") {
-          toast.error(t("لازم تسجّل الدخول بالإيميل الأول عشان نقدر ننشئ الأوردر."));
+          toast.error(t("تعذّر إنشاء الأوردر. الرجاء المحاولة مرة أخرى."));
           return;
         }
         // Server rejected on the LATEST stock — nothing was saved.

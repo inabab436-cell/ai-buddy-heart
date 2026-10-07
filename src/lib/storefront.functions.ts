@@ -510,13 +510,25 @@ export const createStorefrontOrder = createServerFn({ method: "POST" })
       size: it.size ?? null,
     }));
 
-    // No order can ever be created for an unregistered customer: the order is
-    // always linked to the signed-in (email + OTP) customer of THIS merchant.
+    // Guests only: the order links to this browser's guest customer for THIS
+    // merchant, created silently when missing (customer sign-in was removed).
     let customerId: string | null = null;
     try {
-      const { getCurrentCustomerSession } = await import("@/lib/customer-auth.server");
+      const { getCurrentCustomerSession, loginCustomerWithVerifiedEmail } = await import(
+        "@/lib/customer-auth.server"
+      );
       const s = await getCurrentCustomerSession();
       if (s && s.merchantId === merchantId) customerId = s.customerId;
+      if (!customerId && merchantId) {
+        const visitorId = (data.visitor_id ?? "").trim() || null;
+        const guestKey = visitorId ?? crypto.randomUUID();
+        const res = await loginCustomerWithVerifiedEmail(
+          merchantId,
+          `guest-${guestKey}@guest.local`,
+          visitorId,
+        );
+        if (res.ok && res.customerId) customerId = res.customerId;
+      }
     } catch { /* handled below */ }
     if (!customerId) return { ok: false, error: "login_required" };
 
