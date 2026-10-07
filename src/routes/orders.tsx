@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+// @ts-expect-error url import of the prebuilt browser bundle
+import excelJsUrl from "exceljs/dist/exceljs.min.js?url";
 import { ORDER_PAYMENT_STATE_LABEL_AR, orderPaymentState } from "@/lib/payment-policy";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -83,13 +85,23 @@ function fmtMoney(n: number): string {
  * Export orders as a shipping-company-ready .xlsx file:
  * one row per order, one column per data type, styled and wrapped.
  */
+// exceljs is loaded as a static browser script (URL only), never bundled as
+// code: bundling it pulls a require() shim into the server that crashes the
+// live site at startup.
+function loadExcelJs(): Promise<typeof import("exceljs")> {
+  const w = window as unknown as { ExcelJS?: typeof import("exceljs") };
+  if (w.ExcelJS) return Promise.resolve(w.ExcelJS);
+  return new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = excelJsUrl;
+    s.onload = () => (w.ExcelJS ? resolve(w.ExcelJS) : reject(new Error("ExcelJS missing")));
+    s.onerror = () => reject(new Error("Failed to load ExcelJS"));
+    document.head.appendChild(s);
+  });
+}
+
 async function exportOrdersToXlsx(orders: OrderRow[]) {
-  // Browser-only: the SSR guard lets the bundler drop exceljs from the server
-  // build entirely (its require() shim crashes the Worker at startup).
-  if (import.meta.env.SSR) throw new Error("Excel export is browser-only");
-  // @ts-expect-error no types for the prebuilt browser bundle
-  const mod = await import("exceljs/dist/exceljs.min.js");
-  const ExcelJS = (mod.default ?? mod) as typeof import("exceljs");
+  const ExcelJS = await loadExcelJs();
   const book = new ExcelJS.Workbook();
   const sheet = book.addWorksheet("الطلبات", {
     views: [{ rightToLeft: true, state: "frozen", ySplit: 1 }],
