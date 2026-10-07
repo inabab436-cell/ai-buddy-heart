@@ -978,6 +978,13 @@ export const Route = createFileRoute("/api/chat-ai")({
             if (!merchant_id || !visitor_id) {
               return respond({ error: "merchant_id + visitor_id required" }, 400);
             }
+            {
+              const { data: mRow } = await supabase.from("merchants").select("user_id").eq("id", merchant_id).maybeSingle();
+              const { isStoreRestricted } = await import("@/lib/subscription.server");
+              if (await isStoreRestricted(supabase, (mRow as any)?.user_id ?? null)) {
+                return respond({ error: "store_restricted" }, 403);
+              }
+            }
             // Reuse or create the customer record for this visitor so a fresh
             // conversation is still linked to the same long-term identity.
             let startCustomer: CustomerRow | null = null;
