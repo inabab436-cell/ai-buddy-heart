@@ -122,6 +122,16 @@ function BrandPageInner({ slug }: { slug: string }) {
     );
   }
   const store: StorefrontData | undefined = q.data;
+  if (store?.restricted) {
+    return (
+      <div dir={storeDir()} className="store grid min-h-screen place-items-center px-6 text-center">
+        <div>
+          <h1 className="store-display text-3xl">{store.brandName ?? slug}</h1>
+          <p className="mt-3 text-sm text-muted-foreground">{t("المتجر غير متاح مؤقتاً. يرجى المحاولة لاحقاً.")}</p>
+        </div>
+      </div>
+    );
+  }
   if (!store || !store.found) {
     return (
       <div dir={storeDir()} className="store grid min-h-screen place-items-center px-6 text-center">
