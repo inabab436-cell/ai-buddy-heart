@@ -132,6 +132,12 @@ export async function quoteManualOrder(
     items: ManualOrderItemInput[];
     /** Restrict pricing to these offers (used after an atomic seat claim). */
     restrictToOfferIds?: string[] | null;
+    /**
+     * Offers this order ALREADY holds (merchant edit). They stay usable even
+     * if "once per customer" now marks the customer as used, or the seat this
+     * very order holds made the offer look sold out.
+     */
+    keepOfferIds?: string[] | null;
     now?: number;
   },
 ): Promise<ManualOrderQuote> {
@@ -142,6 +148,15 @@ export async function quoteManualOrder(
   const products = await loadPricingProducts(admin, opts.userId);
   const snapshot = await loadOffers(admin, opts.userId, now, opts.customerKeys);
   let offers = snapshot.live;
+  const keep = (opts.keepOfferIds ?? []).map(String).filter((id) => !offers.some((o) => o.id === id));
+  if (keep.length) {
+    const { mapOfferRow } = await import("@/lib/offers.server");
+    const { data: rows } = await admin.from("offers").select("*").eq("user_id", opts.userId).in("id", keep);
+    for (const r of rows ?? []) {
+      const o = mapOfferRow(r);
+      if (o.is_active !== false) offers = [...offers, o];
+    }
+  }
   if (opts.restrictToOfferIds) {
     const keep = new Set(opts.restrictToOfferIds.map(String));
     offers = offers.filter((o) => keep.has(o.id));
