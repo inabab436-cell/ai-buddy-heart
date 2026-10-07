@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// @ts-expect-error url import of the prebuilt browser bundle
 import excelJsUrl from "exceljs/dist/exceljs.min.js?url";
 import { ORDER_PAYMENT_STATE_LABEL_AR, orderPaymentState } from "@/lib/payment-policy";
 import { createFileRoute } from "@tanstack/react-router";
