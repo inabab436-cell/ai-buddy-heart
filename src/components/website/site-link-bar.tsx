@@ -17,6 +17,7 @@ import {
   getSiteState, publishSite, unpublishSite, deleteSite,
   updateWebsiteIdentity, uploadWebsiteLogo,
 } from "@/lib/website.functions";
+import { getActivationStatus } from "@/lib/activation.functions";
 
 function fileToBase64(file: File): Promise<string> {
   return new Promise((res, rej) => {
@@ -34,6 +35,22 @@ function fileToBase64(file: File): Promise<string> {
 function useSite() {
   return useQuery({ queryKey: ["site-state"], queryFn: () => getSiteState() });
 }
+
+/** Explains who can open the store link based on the subscription state. */
+function SubscriptionVisibilityNote() {
+  const { data: a } = useQuery({ queryKey: ["activation-status"], queryFn: () => getActivationStatus() });
+  if (!a) return null;
+  const expired = a.subscribed && !!a.endsAt && new Date(a.endsAt).getTime() <= Date.now();
+  if (a.subscribed && !expired) return null;
+  return (
+    <p className="mt-3 rounded-md bg-muted px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+      {expired
+        ? "انتهى اشتراكك، والمتجر مقفول للعملاء دلوقتي. جدّد الاشتراك علشان يرجع يظهر لهم."
+        : "الرابط ده ظاهر ليك انت بس دلوقتي، لأنك داخل بحسابك. بعد ما تشترك هيظهر لكل العملاء."}
+    </p>
+  );
+}
+
 
 /** Header identity: store logo, name and its public link (replaces the generic label). */
 export function SiteIdentity() {
@@ -86,6 +103,7 @@ export function SiteLinkCard() {
           <a href={path} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3.5 w-3.5" /> فتح</a>
         </Button>
       </div>
+      <SubscriptionVisibilityNote />
     </section>
   );
 }
