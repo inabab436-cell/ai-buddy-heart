@@ -296,7 +296,7 @@ function previewMessage(f: FormState, productName: string | null): string {
     .replaceAll("[اسم العرض]", f.title || "عرض")
     .replaceAll("[قيمة الخصم]", discount)
     .replaceAll("[المنتج]", f.scope === "all" ? "كل المنتجات" : productName || "المنتج")
-    .replaceAll("[تاريخ البداية]", fmt(f.starts_at) ?? "دلوقتي")
+    .replaceAll("[تاريخ البداية]", fmt(f.starts_at) ?? "الآن")
     .replaceAll("[تاريخ الانتهاء]", fmt(f.ends_at) ?? "إشعار آخر")
     .replaceAll("[كود الخصم]", f.coupon_code ? `استخدم كود: ${f.coupon_code}.` : "")
     .replaceAll(
@@ -576,10 +576,10 @@ function OffersPage() {
             </div>
             <div className="space-y-3 rounded-xl border border-border/60 p-3 sm:col-span-2">
             <div>
-              <div className="text-sm font-semibold">المعلومات اللي تظهر جنب الخصم للعميل</div>
+              <div className="text-sm font-semibold">المعلومات التي تظهر بجانب الخصم للعميل</div>
               <div className="text-xs text-muted-foreground">
-                السعر قبل الخصم، السعر بعد الخصم وقيمة الخصم بتظهر دائماً. اختر أي معلومات إضافية تحب تظهر
-                للعميل في صفحة الأوردر.
+                السعر قبل الخصم، والسعر بعد الخصم، وقيمة الخصم تظهر دائمًا. اختر المعلومات الإضافية التي
+                تريد إظهارها للعميل في صفحة الأوردر.
               </div>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
@@ -636,7 +636,7 @@ function OffersPage() {
                 </Hint>
                 <div className="rounded-lg bg-muted/60 p-3">
                   <div className="mb-1 text-[11px] font-semibold text-muted-foreground">
-                    شكل الرسالة اللي هتوصل للعميل
+                    شكل الرسالة التي ستصل إلى العميل
                   </div>
                   <p className="text-sm leading-relaxed">
                     {previewMessage(form, selectedProductName) || "—"}
