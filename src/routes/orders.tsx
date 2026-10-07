@@ -272,6 +272,7 @@ function OrdersPage() {
   const q = useQuery({ queryKey: ["orders"], queryFn: () => listOrders() });
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [selected, setSelected] = useState<Record<string, boolean>>({});
+  const [selectMode, setSelectMode] = useState(false);
   const [newOpen, setNewOpen] = useState(false);
   const [editing, setEditing] = useState<OrderRow | null>(null);
   const [filter, setFilter] = useState<"all" | "new" | "prepared" | "shipped" | "delivered" | "cancelled">("all");
@@ -381,17 +382,11 @@ function OrdersPage() {
       {tab === "messages" ? <StatusMessagesEditor /> : <>
       <NewOrderDialog open={newOpen} onOpenChange={setNewOpen} />
       <EditOrderDialog order={editing} onClose={() => setEditing(null)} />
-      <HubCard className="flex items-center gap-3 p-4">
-        <div className="min-w-0 flex-1">
-          <div className="text-sm font-bold">أنشئ طلباتك بنفسك</div>
-          <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
-            وصلك طلب بالهاتف أو واتساب أو من المحل؟ سجّله هنا في ثوانٍ ليُخصم من المخزون ويظهر مع باقي طلباتك وتتابع شحنه وتصدّره لشركة الشحن.
-          </p>
-        </div>
-        <Button size="sm" className="shrink-0 rounded-full" onClick={() => setNewOpen(true)}>
+      <div className="flex justify-end">
+        <Button size="sm" className="rounded-full" onClick={() => setNewOpen(true)}>
           <Plus className="ml-1 h-4 w-4" /> طلب جديد
         </Button>
-      </HubCard>
+      </div>
       {/* Search + filters */}
       <div className="space-y-3">
         <div className="relative">
@@ -418,48 +413,54 @@ function OrdersPage() {
             </button>
           ))}
         </div>
-        <div className="flex flex-col items-start gap-1">
+        <div className="flex flex-wrap items-center gap-2">
           {(() => {
             const chosen = visible.filter((o) => selected[o.id]);
-            const toExport = chosen.length > 0 ? chosen : visible;
+            const toExport = selectMode && chosen.length > 0 ? chosen : visible;
             const allChosen = visible.length > 0 && chosen.length === visible.length;
             return (
               <>
-                <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  size="sm"
+                  className="rounded-full"
+                  disabled={toExport.length === 0}
+                  onClick={async () => {
+                    try {
+                      await exportOrdersToXlsx(toExport);
+                      toast.success(`تم تصدير ${toExport.length} طلب بنجاح.`);
+                    } catch (e) {
+                      toast.error(e instanceof Error ? e.message : "فشل التصدير.");
+                    }
+                  }}
+                >
+                  <Download className="ml-1 h-4 w-4" />
+                  {selectMode && chosen.length > 0 ? `تصدير المحدد (${chosen.length})` : "تصدير"}
+                </Button>
+                {visible.length > 0 && (
                   <Button
                     size="sm"
+                    variant="outline"
                     className="rounded-full"
-                    disabled={toExport.length === 0}
-                    onClick={async () => {
-                      try {
-                        await exportOrdersToXlsx(toExport);
-                        toast.success(`تم تصدير ${toExport.length} طلب بنجاح.`);
-                      } catch (e) {
-                        toast.error(e instanceof Error ? e.message : "فشل التصدير.");
-                      }
+                    onClick={() => {
+                      setSelectMode((m) => !m);
+                      setSelected({});
                     }}
                   >
-                    <Download className="ml-1 h-4 w-4" />
-                    {chosen.length > 0
-                      ? `تصدير المحدد (${chosen.length})`
-                      : `تصدير الطلبات لشركة الشحن${filter !== "all" ? ` (${visible.length})` : ""}`}
+                    {selectMode ? "إنهاء التحديد" : "تحديد"}
                   </Button>
-                  {visible.length > 0 && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="rounded-full"
-                      onClick={() =>
-                        setSelected(allChosen ? {} : Object.fromEntries(visible.map((o) => [o.id, true])))
-                      }
-                    >
-                      {allChosen ? "إلغاء التحديد" : "تحديد الكل"}
-                    </Button>
-                  )}
-                </div>
-                <span className="px-2 text-[11px] text-muted-foreground">
-                  حدّد الطلبات بالمربع بجانب كل طلب لتصديرها فقط، أو صدّر كل الطلبات المعروضة
-                </span>
+                )}
+                {selectMode && visible.length > 0 && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="rounded-full"
+                    onClick={() =>
+                      setSelected(allChosen ? {} : Object.fromEntries(visible.map((o) => [o.id, true])))
+                    }
+                  >
+                    {allChosen ? "إلغاء الكل" : "تحديد الكل"}
+                  </Button>
+                )}
               </>
             );
           })()}
@@ -476,13 +477,15 @@ function OrdersPage() {
         <div className="space-y-3">
           {visible.map((o) => (
             <div key={o.id} className="flex items-start gap-2">
-              <input
-                type="checkbox"
-                aria-label="تحديد الطلب للتصدير"
-                checked={!!selected[o.id]}
-                onChange={(e) => setSelected((s) => ({ ...s, [o.id]: e.target.checked }))}
-                className="mt-5 h-5 w-5 shrink-0 accent-primary"
-              />
+              {selectMode && (
+                <input
+                  type="checkbox"
+                  aria-label="تحديد الطلب للتصدير"
+                  checked={!!selected[o.id]}
+                  onChange={(e) => setSelected((s) => ({ ...s, [o.id]: e.target.checked }))}
+                  className="mt-5 h-5 w-5 shrink-0 accent-primary"
+                />
+              )}
               <div className="min-w-0 flex-1">
                 <OrderCard
                   o={o}
@@ -499,16 +502,6 @@ function OrdersPage() {
           ))}
         </div>
       )}
-
-      <HubCard className="flex items-start gap-2 p-4 text-[11px] leading-relaxed text-muted-foreground">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-        <p>
-          الطلبات بطريقة دفع <span className="font-semibold text-foreground">تلقائية</span> يتم خصم كمياتها من المخزون فور إنشاء الطلب.
-          أما الطلبات بطريقة دفع <span className="font-semibold text-foreground">يدوية</span> فلا يتم خصم أي كمية إلا بعد ضغطك على
-          <span className="font-semibold text-foreground"> «تأكيد الدفع»</span>، وعندها يتم التحقق من المخزون الحقيقي ثم الخصم.
-          لو حابب ترجّع الكميات للمخزون مرة أخرى، اضغط زر <span className="font-semibold text-foreground">«ملغي»</span> بجانب الطلب.
-        </p>
-      </HubCard>
       </>}
     </HubShell>
   );
@@ -582,15 +575,8 @@ function OrderCard({
       </button>
 
       {pending && (
-        <div className="mx-4 mb-3 rounded-xl border border-amber-300/70 bg-amber-50 px-3 py-2 text-[11px] leading-relaxed text-amber-900">
-          تنبيه: أضاف العميل منتجات على هذا الطلب بعد تأكيد الدفع
-          {o.pending_since ? ` (${fmtDate(o.pending_since)})` : ""}.{" "}
-          {pendingItemsOf(o)
-            .map((it) => `${[it.product_name, it.color, it.size].filter(Boolean).join(" - ")} × ${Number(it.quantity ?? 0)}`)
-            .join("، ")}
-          {" — "}
-          المطلوب {fmtMoney(Number(o.pending_total ?? 0))}. الجزء المدفوع سابقًا لم يتغيّر، ومخزون الإضافة لم يُخصم،
-          ولن تُحتسب مدفوعة إلا بعد الضغط على «تأكيد دفع الإضافة».
+        <div className="mx-4 mb-3 rounded-xl border border-amber-300/70 bg-amber-50 px-3 py-2 text-[11px] text-amber-900">
+          إضافة جديدة بانتظار الدفع: {fmtMoney(Number(o.pending_total ?? 0))}
         </div>
       )}
 
@@ -675,9 +661,12 @@ function OrderCard({
         </div>
       )}
 
-      <div className="hub-scroll-x flex gap-2 border-t border-border p-3">
+      <div className="flex flex-wrap gap-2 border-t border-border p-3">
+        <Button size="sm" variant="outline" className="rounded-full" onClick={onEdit}>
+          <Pencil className="ml-1 h-3.5 w-3.5" /> تعديل
+        </Button>
         {(o.payment_status === "pending" || pending) && o.status !== "cancelled" && (
-          <Button size="sm" className="shrink-0 rounded-full" disabled={busy.pay} onClick={onPay}>
+          <Button size="sm" className="rounded-full" disabled={busy.pay} onClick={onPay}>
             <BadgeCheck className="ml-1 h-3.5 w-3.5" />
             {o.payment_status === "pending" ? "تأكيد الدفع" : "تأكيد دفع الإضافة"}
           </Button>
@@ -685,7 +674,7 @@ function OrderCard({
         <Button
           size="sm"
           variant="outline"
-          className="shrink-0 rounded-full"
+          className="rounded-full"
           disabled={
             o.status === "prepared" || o.status === "shipped" ||
             o.status === "delivered" || o.status === "cancelled" || busy.status
@@ -697,7 +686,7 @@ function OrderCard({
         <Button
           size="sm"
           variant="outline"
-          className="shrink-0 rounded-full"
+          className="rounded-full"
           disabled={o.status === "shipped" || o.status === "delivered" || busy.status}
           onClick={() => onStatus("shipped")}
         >
@@ -706,7 +695,7 @@ function OrderCard({
         <Button
           size="sm"
           variant="outline"
-          className="shrink-0 rounded-full"
+          className="rounded-full"
           disabled={o.status === "delivered" || busy.status}
           onClick={() => onStatus("delivered")}
         >
@@ -715,14 +704,11 @@ function OrderCard({
         <Button
           size="sm"
           variant="outline"
-          className="shrink-0 rounded-full text-destructive hover:text-destructive"
+          className="rounded-full text-destructive hover:text-destructive"
           disabled={o.status === "cancelled" || busy.cancel}
           onClick={onCancel}
         >
-          <XCircle className="ml-1 h-3.5 w-3.5" /> ملغي
-        </Button>
-        <Button size="sm" variant="outline" className="shrink-0 rounded-full" onClick={onEdit}>
-          <Pencil className="ml-1 h-3.5 w-3.5" /> تعديل
+          <XCircle className="ml-1 h-3.5 w-3.5" /> إلغاء
         </Button>
       </div>
     </HubCard>
