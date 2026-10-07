@@ -30,3 +30,6 @@
 - [x] Shipping-company Excel export button on the orders page
 - [x] Remove customer sign-in entirely (Google panel, OTP, login UI) — guests only, per owner decision
 - [x] Admin plan upgrade: store subscription start/end dates (monthly from activation), show to admin + merchant, warn merchant of store restriction on expiry until renewal
+- [x] Checkout: remove "لازم تسجّل الدخول بالإيميل" block — guests can place orders
+- [x] Orders page cleanup: remove long instructions, hide selection checkboxes until toggled, add edit-order button
+- [x] Enforce subscription expiry: restrict store (storefront/agent/merchant actions) once period ends until renewal

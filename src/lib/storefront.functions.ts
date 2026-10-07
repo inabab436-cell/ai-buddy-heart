@@ -39,6 +39,8 @@ export interface StorefrontPaymentMethod {
 }
 export interface StorefrontData {
   found: boolean;
+  /** Paid period ended and not renewed — storefront is closed. */
+  restricted?: boolean;
   slug: string;
   userId: string | null;
   merchantId: string | null;
@@ -82,6 +84,18 @@ export const getStorefront = createServerFn({ method: "GET" })
     // by merchants.id. Use merchants.user_id everywhere below.
     const userId = String((merchant as any).user_id);
     const merchantId = String(merchant.id);
+    {
+      const { isStoreRestricted } = await import("@/lib/subscription.server");
+      if (await isStoreRestricted(admin, userId)) {
+        return {
+          found: true, restricted: true, slug: data.slug, userId: null, merchantId: null,
+          brandName: (merchant as any).brand_name ?? null,
+          brandDescription: null, logoUrl: null, themeKey: null,
+          sectionsConfig: null, products: [], policies: [], contacts: [], shipping: [],
+          paymentMethods: [],
+        };
+      }
+    }
 
 
     const [pR, polR, cR, shR, imgR, colR] = await Promise.all([
@@ -467,6 +481,11 @@ export const createStorefrontOrder = createServerFn({ method: "POST" })
     if (!merchant?.id) throw new Error("Store not found.");
     const merchantId = String(merchant.id);
     const userId = (merchant as any).user_id ? String((merchant as any).user_id) : null;
+    {
+      const { isStoreRestricted } = await import("@/lib/subscription.server");
+      if (await isStoreRestricted(admin, userId)) throw new Error("المتجر غير متاح مؤقتاً.");
+    }
+
 
     // Payment method must be one of the merchant's ENABLED methods (same rule
     // as the chat agent). If the merchant has none configured, it stays null.
@@ -510,13 +529,25 @@ export const createStorefrontOrder = createServerFn({ method: "POST" })
       size: it.size ?? null,
     }));
 
-    // No order can ever be created for an unregistered customer: the order is
-    // always linked to the signed-in (email + OTP) customer of THIS merchant.
+    // Guests only: the order links to this browser's guest customer for THIS
+    // merchant, created silently when missing (customer sign-in was removed).
     let customerId: string | null = null;
     try {
-      const { getCurrentCustomerSession } = await import("@/lib/customer-auth.server");
+      const { getCurrentCustomerSession, loginCustomerWithVerifiedEmail } = await import(
+        "@/lib/customer-auth.server"
+      );
       const s = await getCurrentCustomerSession();
       if (s && s.merchantId === merchantId) customerId = s.customerId;
+      if (!customerId && merchantId) {
+        const visitorId = (data.visitor_id ?? "").trim() || null;
+        const guestKey = visitorId ?? crypto.randomUUID();
+        const res = await loginCustomerWithVerifiedEmail(
+          merchantId,
+          `guest-${guestKey}@guest.local`,
+          visitorId,
+        );
+        if (res.ok && res.customerId) customerId = res.customerId;
+      }
     } catch { /* handled below */ }
     if (!customerId) return { ok: false, error: "login_required" };
 
