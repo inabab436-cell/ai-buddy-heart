@@ -5,18 +5,15 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * cupai design system — Arabic RTL, premium SaaS aesthetic.
+ * Palette derived from the brand mark (teal cyan → violet purple)
+ * on warm neutral surfaces. All colors in oklch.
  */
+
+@theme {
+  --font-sans: "Cairo", "IBM Plex Sans Arabic", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Cairo", "IBM Plex Sans Arabic", "Inter", ui-sans-serif, system-ui, sans-serif;
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -59,77 +56,121 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-brand-teal: var(--brand-teal);
+  --color-brand-violet: var(--brand-violet);
+  --color-brand-blue: var(--brand-blue);
+  --color-hub-coral: var(--hub-coral);
+  --color-hub-coral-soft: var(--hub-coral-soft);
+  --color-hub-gold: var(--hub-gold);
+  --color-hub-gold-soft: var(--hub-gold-soft);
+  --color-hub-mint: var(--hub-mint);
+  --color-hub-mint-soft: var(--hub-mint-soft);
+  --color-hub-sky: var(--hub-sky);
+  --color-hub-sky-soft: var(--hub-sky-soft);
+  --color-dashboard-blue: var(--dashboard-blue);
+  --color-dashboard-blue-soft: var(--dashboard-blue-soft);
+  --color-dashboard-green: var(--dashboard-green);
+  --color-dashboard-green-soft: var(--dashboard-green-soft);
+  --color-dashboard-amber: var(--dashboard-amber);
+  --color-dashboard-amber-soft: var(--dashboard-amber-soft);
+  --color-dashboard-rose: var(--dashboard-rose);
+  --color-dashboard-rose-soft: var(--dashboard-rose-soft);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --radius: 0.875rem;
+
+  /* Brand accents — pulled from the logo gradient */
+  --brand-teal: oklch(0.82 0.11 195);
+  --brand-blue: oklch(0.68 0.14 250);
+  --brand-violet: oklch(0.62 0.20 288);
+
+  /* Surfaces — warm off-white, soft neutral cards */
+  --background: oklch(0.985 0.005 250);
+  --foreground: oklch(0.22 0.04 275);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.22 0.04 275);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --popover-foreground: oklch(0.22 0.04 275);
+
+  /* Primary = deep violet from logo; foreground stays white for contrast */
+  --primary: oklch(0.55 0.20 288);
+  --primary-foreground: oklch(0.99 0.005 250);
+
+  --secondary: oklch(0.965 0.012 250);
+  --secondary-foreground: oklch(0.28 0.05 275);
+  --muted: oklch(0.965 0.012 250);
+  --muted-foreground: oklch(0.52 0.03 270);
+  --accent: oklch(0.95 0.03 220);
+  --accent-foreground: oklch(0.32 0.10 275);
+
+  --destructive: oklch(0.60 0.22 27);
+  --destructive-foreground: oklch(0.99 0.005 250);
+
+  --border: oklch(0.92 0.012 260);
+  --input: oklch(0.92 0.012 260);
+  --ring: oklch(0.62 0.20 288);
+
+  --chart-1: oklch(0.82 0.11 195);
+  --chart-2: oklch(0.68 0.14 250);
+  --chart-3: oklch(0.62 0.20 288);
+  --chart-4: oklch(0.75 0.13 220);
+  --chart-5: oklch(0.55 0.20 288);
+
+  --sidebar: oklch(0.98 0.008 250);
+  --sidebar-foreground: oklch(0.28 0.04 275);
+  --sidebar-primary: oklch(0.55 0.20 288);
+  --sidebar-primary-foreground: oklch(0.99 0.005 250);
+  --sidebar-accent: oklch(0.94 0.02 250);
+  --sidebar-accent-foreground: oklch(0.32 0.10 275);
+  --sidebar-border: oklch(0.92 0.012 260);
+  --sidebar-ring: oklch(0.62 0.20 288);
+
+  /* Premium gradients & shadows */
+  --gradient-brand: linear-gradient(135deg, oklch(0.82 0.11 195) 0%, oklch(0.68 0.14 250) 50%, oklch(0.62 0.20 288) 100%);
+  --gradient-surface: radial-gradient(1200px 600px at 100% -10%, color-mix(in oklab, oklch(0.82 0.11 195) 18%, transparent), transparent 60%),
+                      radial-gradient(900px 500px at -10% 110%, color-mix(in oklab, oklch(0.62 0.20 288) 18%, transparent), transparent 55%);
+  --shadow-elegant: 0 1px 2px oklch(0.22 0.04 275 / 0.04), 0 8px 24px -12px oklch(0.55 0.20 288 / 0.18);
+  --shadow-glow: 0 20px 60px -20px oklch(0.62 0.20 288 / 0.35);
+  --shadow-card: 0 1px 0 oklch(1 0 0 / 0.6) inset, 0 1px 2px oklch(0.22 0.04 275 / 0.04), 0 6px 20px -10px oklch(0.22 0.04 275 / 0.08);
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --background: oklch(0.18 0.03 275);
+  --foreground: oklch(0.97 0.008 250);
+  --card: oklch(0.22 0.035 275);
+  --card-foreground: oklch(0.97 0.008 250);
+  --popover: oklch(0.22 0.035 275);
+  --popover-foreground: oklch(0.97 0.008 250);
+  --primary: oklch(0.72 0.17 288);
+  --primary-foreground: oklch(0.15 0.03 275);
+  --secondary: oklch(0.27 0.04 275);
+  --secondary-foreground: oklch(0.97 0.008 250);
+  --muted: oklch(0.27 0.04 275);
+  --muted-foreground: oklch(0.72 0.03 260);
+  --accent: oklch(0.32 0.06 275);
+  --accent-foreground: oklch(0.97 0.008 250);
+  --destructive: oklch(0.65 0.20 27);
+  --destructive-foreground: oklch(0.97 0.008 250);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.72 0.17 288);
+  --chart-1: oklch(0.75 0.11 195);
+  --chart-2: oklch(0.72 0.14 250);
+  --chart-3: oklch(0.72 0.17 288);
+  --chart-4: oklch(0.70 0.13 220);
+  --chart-5: oklch(0.62 0.20 288);
+  --sidebar: oklch(0.20 0.035 275);
+  --sidebar-foreground: oklch(0.97 0.008 250);
+  --sidebar-primary: oklch(0.72 0.17 288);
+  --sidebar-primary-foreground: oklch(0.15 0.03 275);
+  --sidebar-accent: oklch(0.28 0.045 275);
+  --sidebar-accent-foreground: oklch(0.97 0.008 250);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --sidebar-ring: oklch(0.72 0.17 288);
+  --shadow-elegant: 0 1px 2px oklch(0 0 0 / 0.4), 0 8px 24px -12px oklch(0.62 0.20 288 / 0.35);
+  --shadow-glow: 0 20px 60px -20px oklch(0.72 0.17 288 / 0.45);
+  --shadow-card: 0 1px 0 oklch(1 0 0 / 0.05) inset, 0 1px 2px oklch(0 0 0 / 0.4), 0 6px 20px -10px oklch(0 0 0 / 0.4);
 }
 
 @layer base {
@@ -140,5 +181,607 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  [dir="rtl"] body {
+    letter-spacing: 0;
   }
 }
+
+@utility bg-gradient-brand {
+  background-image: var(--gradient-brand);
+}
+
+@utility bg-gradient-surface {
+  background-image: var(--gradient-surface);
+}
+
+@utility text-gradient-brand {
+  background-image: var(--gradient-brand);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@utility shadow-elegant {
+  box-shadow: var(--shadow-elegant);
+}
+
+@utility shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+/* ============================================================
+   HUB — isolated redesign scope for /orders and /chat.
+   Apple-inspired light surfaces with system blue and a soft red
+   supporting accent. Natural chat-app feel, mobile-first.
+   Nothing here leaks outside an element carrying `.hub`.
+   ============================================================ */
+.hub {
+  /* Deep ocean palette: #0c2340 · #1a4a6e · #2d8a9e · #5cbdb9 */
+  --hub-ink: oklch(0.25 0.062 251);
+  --hub-navy: oklch(0.25 0.062 251);
+  --hub-navy-2: oklch(0.38 0.071 244);
+  --hub-blue: oklch(0.58 0.083 217);
+  --hub-blue-soft: oklch(0.95 0.021 215);
+  --hub-teal: oklch(0.74 0.075 186);
+  --hub-teal-soft: oklch(0.96 0.021 186);
+  --hub-red: oklch(0.62 0.19 25);
+  --hub-red-soft: oklch(0.96 0.03 20);
+  --hub-coral: oklch(0.67 0.16 28);
+  --hub-coral-soft: oklch(0.95 0.035 28);
+  --hub-gold: oklch(0.70 0.14 78);
+  --hub-gold-soft: oklch(0.96 0.035 82);
+  --hub-mint: oklch(0.58 0.12 160);
+  --hub-mint-soft: oklch(0.95 0.035 160);
+  --hub-sky: oklch(0.58 0.14 238);
+  --hub-sky-soft: oklch(0.95 0.035 238);
+  --hub-gray: oklch(0.55 0.022 245);
+  --hub-canvas: oklch(0.97 0.005 240);
+  --hub-paper: oklch(1 0 0);
+
+  /* Contact channel brand hues (icons only, used on soft tints) */
+  --brand-whatsapp: oklch(0.68 0.17 150);
+  --brand-phone: oklch(0.58 0.083 217);
+  --brand-email: oklch(0.60 0.15 30);
+  --brand-address: oklch(0.60 0.18 25);
+  --brand-instagram: oklch(0.60 0.22 0);
+  --brand-facebook: oklch(0.55 0.18 260);
+  --brand-tiktok: oklch(0.25 0.02 260);
+  --brand-twitter: oklch(0.25 0.02 260);
+  --brand-snapchat: oklch(0.80 0.16 95);
+  --brand-telegram: oklch(0.65 0.13 235);
+  --brand-website: oklch(0.50 0.08 240);
+  --brand-other: oklch(0.55 0.022 245);
+
+  --background: var(--hub-canvas);
+  --foreground: var(--hub-ink);
+  --card: var(--hub-paper);
+  --card-foreground: var(--hub-ink);
+  --popover: var(--hub-paper);
+  --popover-foreground: var(--hub-ink);
+  --primary: var(--hub-blue);
+  --primary-foreground: var(--hub-paper);
+  --secondary: var(--hub-teal-soft);
+  --secondary-foreground: oklch(0.42 0.07 200);
+  --muted: oklch(0.95 0.006 240);
+  --muted-foreground: var(--hub-gray);
+  --accent: var(--hub-blue-soft);
+  --accent-foreground: oklch(0.40 0.07 225);
+  --destructive: var(--hub-red);
+  --destructive-foreground: var(--hub-paper);
+  --border: oklch(0.90 0.008 240);
+  --input: oklch(0.90 0.008 240);
+  --ring: var(--hub-blue);
+  --radius: 1.25rem;
+
+  --gradient-brand: linear-gradient(160deg, var(--hub-navy) 0%, var(--hub-navy-2) 100%);
+  --gradient-surface: none;
+  --shadow-card: 0 1px 2px oklch(0.25 0.062 251 / 0.04), 0 8px 24px -18px oklch(0.25 0.062 251 / 0.18);
+  --shadow-elegant: 0 1px 2px oklch(0.25 0.062 251 / 0.05), 0 16px 40px -28px oklch(0.25 0.062 251 / 0.26);
+  --shadow-glow: 0 18px 48px -24px oklch(0.58 0.083 217 / 0.4);
+
+  background-color: var(--hub-canvas);
+  color: var(--foreground);
+  font-family: "Tajawal", "Cairo", "Manrope", var(--font-sans);
+  letter-spacing: 0;
+}
+
+.hub h1,
+.hub h2,
+.hub h3,
+.hub .hub-display {
+  font-family: "Tajawal", "Cairo", "Sora", var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.hub :where([lang="en"], .hub-latin) {
+  font-family: "Sora", "Manrope", sans-serif;
+}
+
+/* Dark ocean header used at the top of hub pages */
+@utility hub-hero {
+  background-image: linear-gradient(to bottom, var(--hub-navy), var(--hub-navy-2));
+  color: oklch(1 0 0);
+}
+
+/* Rounded light sheet that overlaps the dark header */
+@utility hub-sheet-top {
+  border-start-start-radius: 2rem;
+  border-start-end-radius: 2rem;
+  background-color: var(--hub-canvas);
+}
+
+/* Square icon tile used in the quick-access grid */
+@utility hub-tile {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 1.25rem;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+}
+
+/* Flat grouped background, matching a native Apple conversation surface. */
+@utility hub-canvas {
+  background-color: var(--hub-canvas);
+  background-image: none;
+}
+
+/* Bottom sheet used for the products picker */
+@utility hub-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: color-mix(in srgb, var(--hub-ink) 24%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+@utility hub-sheet {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 51;
+  border-start-start-radius: 1.75rem;
+  border-start-end-radius: 1.75rem;
+  background-color: var(--card);
+  box-shadow: 0 -20px 60px -24px oklch(0.22 0.015 255 / 0.3);
+  animation: hub-sheet-in 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes hub-sheet-in {
+  from { transform: translateY(14%); opacity: 0.4; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Frosted top bar used by every hub page */
+@utility hub-bar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background-color: color-mix(in srgb, var(--hub-paper) 78%, transparent);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+@utility hub-card {
+  border-radius: var(--radius);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+}
+
+@utility hub-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+@utility hub-scroll-x {
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hub-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+/* Dashboard-only palette: Cloud White with restrained functional accents. */
+.hub-dashboard {
+  --hub-canvas: oklch(0.985 0.004 247);
+  --hub-paper: oklch(1 0 0);
+  --hub-ink: oklch(0.25 0.026 256);
+  --background: var(--hub-canvas);
+  --foreground: var(--hub-ink);
+  --card: var(--hub-paper);
+  --card-foreground: var(--hub-ink);
+  --primary: oklch(0.623 0.188 260);
+  --primary-foreground: oklch(1 0 0);
+  --muted: oklch(0.955 0.009 248);
+  --muted-foreground: oklch(0.555 0.031 258);
+  --border: oklch(0.925 0.009 253);
+  --dashboard-blue: oklch(0.623 0.188 260);
+  --dashboard-blue-soft: oklch(0.965 0.022 254);
+  --dashboard-green: oklch(0.59 0.14 156);
+  --dashboard-green-soft: oklch(0.963 0.025 156);
+  --dashboard-amber: oklch(0.68 0.14 73);
+  --dashboard-amber-soft: oklch(0.969 0.032 80);
+  --dashboard-rose: oklch(0.62 0.17 22);
+  --dashboard-rose-soft: oklch(0.965 0.028 20);
+  --shadow-card: 0 1px 2px oklch(0.25 0.026 256 / 0.04), 0 10px 24px -20px oklch(0.25 0.026 256 / 0.22);
+  font-family: "Manrope", "Cairo", sans-serif;
+}
+
+.hub-dashboard h1,
+.hub-dashboard h2,
+.hub-dashboard h3,
+.hub-dashboard .dashboard-number {
+  font-family: "Sora", "Cairo", sans-serif;
+  letter-spacing: 0;
+}
+
+@utility dashboard-summary-card {
+  display: flex;
+  min-height: 7rem;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background-color: var(--card);
+  padding: 1rem;
+  box-shadow: var(--shadow-card);
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.dashboard-summary-card:hover {
+  border-color: color-mix(in oklab, var(--primary) 30%, var(--border));
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-dashboard *,
+  .hub-dashboard *::before,
+  .hub-dashboard *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   INVENTORY — calm navy mobile feed. Scoped under .inventory-navy;
+   nothing here leaks to the wider hub theme.
+   ============================================================ */
+.inventory-navy {
+  --background: oklch(0.975 0.005 247);           /* #f5f7fa */
+  --foreground: oklch(0.27 0.045 240);            /* #0f2a3d */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.27 0.045 240);
+  --primary: oklch(0.62 0.1 182);                 /* #2a9d8f */
+  --primary-foreground: oklch(1 0 0);
+  --muted: oklch(0.96 0.006 247);
+  --muted-foreground: oklch(0.55 0.02 245);
+  --border: oklch(0.93 0.008 247);
+  --inv-warn: oklch(0.67 0.15 40);                /* #e76f51 */
+  --inv-warn-soft: oklch(0.95 0.03 40);
+  --inv-ok-soft: oklch(0.95 0.03 182);
+  font-family: "IBM Plex Sans Arabic", "Manrope", sans-serif;
+  color: var(--foreground);
+}
+.inventory-navy .inv-num { font-family: "Manrope", "IBM Plex Sans Arabic", sans-serif; }
+.inventory-navy .inv-title { font-family: "Sora", "IBM Plex Sans Arabic", sans-serif; }
+@utility text-inv-warn { color: var(--inv-warn); }
+@utility bg-inv-warn-soft { background-color: var(--inv-warn-soft); }
+@utility bg-inv-ok-soft { background-color: var(--inv-ok-soft); }
+
+/* ============================================================
+   OFFERS — calm geometric teal redesign (direction "لوحة تركواز
+   هندسية"). Scoped under .offers-teal inside the dashboard; nothing
+   here leaks to the wider hub theme.
+   ============================================================ */
+.offers-teal {
+  --of-deep: #0f766e;
+  --of-teal: #14b8a6;
+  --of-soft: #ccfbf1;
+  --of-tint: #f0fdfa;
+  --of-slate: #64748b;
+  --of-rose: #fb7185;
+  --of-rose-soft: #fff1f2;
+  font-family: "IBM Plex Sans Arabic", "Tajawal", "Cairo", sans-serif;
+}
+
+.offers-teal .of-nums {
+  font-family: "Space Grotesk", "DM Sans", monospace;
+  letter-spacing: 0.04em;
+}
+
+.offers-teal .of-panel {
+  border: 1px solid var(--of-soft);
+  background-color: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgb(15 118 110 / 0.05);
+}
+
+.offers-teal .of-card {
+  border: 1px solid var(--of-soft);
+  background-color: #fff;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgb(15 118 110 / 0.05);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.offers-teal .of-card:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--of-teal) 35%, var(--of-soft));
+  box-shadow: 0 8px 24px -16px rgb(15 118 110 / 0.25);
+}
+
+.offers-teal .of-card.is-muted {
+  opacity: 0.85;
+}
+
+.offers-teal .of-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.offers-teal .of-badge-live {
+  background-color: var(--of-soft);
+  color: var(--of-deep);
+}
+
+.offers-teal .of-badge-sched {
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.offers-teal .of-badge-ended {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+}
+
+.offers-teal .of-title {
+  color: var(--of-deep);
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.offers-teal .of-discount {
+  color: var(--of-teal);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.offers-teal .of-meta {
+  color: var(--of-slate);
+  font-size: 0.75rem;
+  line-height: 1.7;
+}
+
+.offers-teal .of-stat {
+  flex: 1 1 0;
+  min-width: 0;
+  background-color: var(--of-tint);
+  border: 1px solid var(--of-soft);
+  border-radius: 0.75rem;
+  padding: 0.625rem;
+  text-align: center;
+}
+
+.offers-teal .of-stat-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-size: 0.6875rem;
+  color: var(--of-slate);
+  margin-bottom: 0.15rem;
+}
+
+.offers-teal .of-stat-value {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--of-deep);
+}
+
+.offers-teal .of-stat-sub {
+  margin-top: 0.15rem;
+  font-size: 0.6875rem;
+  color: var(--of-slate);
+}
+
+.offers-teal .of-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  color: var(--of-teal);
+  transition: background-color 150ms ease;
+}
+
+.offers-teal .of-icon-btn:hover {
+  background-color: var(--of-tint);
+}
+
+.offers-teal .of-icon-btn-danger {
+  color: var(--of-rose);
+}
+
+.offers-teal .of-icon-btn-danger:hover {
+  background-color: var(--of-rose-soft);
+}
+
+.offers-teal .of-btn-new {
+  background-color: var(--of-teal);
+  color: #fff;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 6px 16px -8px rgb(20 184 166 / 0.6);
+  transition: transform 120ms ease, background-color 150ms ease;
+}
+
+.offers-teal .of-btn-new:hover {
+  background-color: var(--of-deep);
+}
+
+.offers-teal .of-btn-new:active {
+  transform: scale(0.97);
+}
+
+.offers-teal .of-row {
+  border: 1px solid var(--of-soft);
+  border-radius: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  background-color: #fff;
+}
+
+.offers-teal .of-row-dashed {
+  border-style: dashed;
+  background-color: var(--of-tint);
+}
+
+/* ============================================================================
+ * Storefront — big-fashion-house look (monochrome, editorial, sharp edges).
+ * Scoped to .store so the merchant dashboard keeps its own theme.
+ * ========================================================================== */
+.store {
+  --radius: 0rem;
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.13 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.13 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.13 0 0);
+  --primary: oklch(0.13 0 0);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.955 0.004 80);
+  --secondary-foreground: oklch(0.13 0 0);
+  --muted: oklch(0.955 0.004 80);
+  --muted-foreground: oklch(0.48 0 0);
+  --accent: oklch(0.94 0.004 80);
+  --accent-foreground: oklch(0.13 0 0);
+  --destructive: oklch(0.56 0.21 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.89 0 0);
+  --input: oklch(0.85 0 0);
+  --ring: oklch(0.13 0 0);
+  --store-sale: oklch(0.56 0.21 27);
+  font-family: "Barlow", "Cairo", ui-sans-serif, system-ui, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+}
+.store .store-display {
+  font-family: "Bebas Neue", "Cairo", sans-serif;
+  letter-spacing: 0.02em;
+  line-height: 0.95;
+}
+.store .store-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+@utility store-marquee {
+  animation: store-marquee 28s linear infinite;
+}
+@keyframes store-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(50%); }
+}
+
+/* Floating pulsing chat button on the storefront */
+.store-chat-fab {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 9999px;
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+  box-shadow: 0 10px 25px -8px color-mix(in oklch, var(--color-primary) 60%, transparent);
+  transition: transform 0.2s ease;
+}
+.store-chat-fab:hover { transform: scale(1.06); }
+.store-chat-fab-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--color-primary);
+  animation: store-chat-pulse 2s ease-out infinite;
+}
+@keyframes store-chat-pulse {
+  0% { transform: scale(1); opacity: 0.55; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .store-chat-fab-ring { animation: none; }
+}
+
+/* Customer chat uses the storefront look */
+.store-chat .hub-bar { background: color-mix(in oklab, var(--background) 92%, transparent); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
+.store-chat .hub-canvas, .store-chat { background: var(--background); }
+.store-chat :is(.rounded-full, .rounded-xl, .rounded-2xl, .rounded-lg, [class*="rounded-["]) { border-radius: 0 !important; }
+.store-chat .hub-card { border-radius: 0; box-shadow: none; border: 1px solid var(--border); }
+.store-chat .hub-display { font-family: "Bebas Neue", "Cairo", sans-serif; letter-spacing: .02em; }
+.store-chat .shadow-card { box-shadow: none; }
+
+/* Merchant conversations page — scoped */
+.hub-chat {
+  --chat-wall: oklch(0.965 0.008 220);
+  --chat-in: var(--hub-paper);
+  --chat-in-fg: var(--hub-ink);
+  --chat-out: oklch(0.93 0.035 205);
+  --chat-out-fg: oklch(0.27 0.05 240);
+  --chat-meta: oklch(0.55 0.02 240);
+  --chat-active: oklch(0.95 0.025 215);
+}
+.hub-chat .chat-wall {
+  background-color: var(--chat-wall);
+  background-image: radial-gradient(oklch(0.25 0.062 251 / 0.035) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.hub-chat .bubble-in { background: var(--chat-in); color: var(--chat-in-fg); box-shadow: 0 1px 1.5px oklch(0.25 0.062 251 / 0.08); }
+.hub-chat .bubble-out { background: var(--chat-out); color: var(--chat-out-fg); box-shadow: 0 1px 1.5px oklch(0.25 0.062 251 / 0.06); }
+.hub-chat .chat-meta { color: var(--chat-meta); }
+.hub-chat .row-active { background: var(--chat-active); box-shadow: inset -3px 0 0 var(--hub-blue); }
+.hub-chat .chat-text { font-size: 15.5px; line-height: 1.75; }
+
+/* Google sign-in continuation */
+.auth-orbit-ring {
+  border: 2px solid color-mix(in oklab, var(--primary) 18%, transparent);
+  border-top-color: var(--primary);
+  animation: auth-spin 0.9s linear infinite;
+}
+.auth-dot { animation: auth-dot 1s ease-in-out infinite; }
+@keyframes auth-spin { to { transform: rotate(360deg); } }
+@keyframes auth-dot { 0%, 100% { opacity: .25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
