@@ -4,6 +4,8 @@
  *   session) can open it.
  * - Subscribed but period ended: restricted for everyone until renewal.
  */
+import { getSession } from "@tanstack/react-start/server";
+
 export type StoreAccess = "open" | "unsubscribed" | "expired";
 
 export async function getStoreAccess(admin: any, userId: string | null | undefined): Promise<StoreAccess> {
@@ -22,7 +24,6 @@ export async function getStoreAccess(admin: any, userId: string | null | undefin
 /** True when the current request carries the store owner's merchant session. */
 async function isOwnerRequest(userId: string): Promise<boolean> {
   try {
-    const { getSession } = await import("@tanstack/react-start/server");
     const { getSessionConfig } = await import("@/lib/session.server");
     const s = await getSession<{ userId: string }>(getSessionConfig());
     return s.data?.userId === userId;
