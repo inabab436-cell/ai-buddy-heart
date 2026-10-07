@@ -212,8 +212,16 @@ function LoginPage() {
           </div>
         ) : null}
 
-        {info && !error ? <p className="text-sm text-muted-foreground">{info}</p> : null}
-        {error ? <p className="text-sm font-medium text-destructive">{error}</p> : null}
+        {info && !error ? (
+          <div role="status" className="rounded-lg border border-primary/30 bg-primary/10 px-3.5 py-2.5 text-sm font-medium leading-relaxed text-primary">
+            {info}
+          </div>
+        ) : null}
+        {error ? (
+          <div role="alert" className="rounded-lg border border-destructive/40 bg-destructive/10 px-3.5 py-2.5 text-sm font-medium leading-relaxed text-destructive">
+            {error}
+          </div>
+        ) : null}
 
         <Button type="submit" size="lg" className="w-full" disabled={busy}>
           {busy ? "جارٍ التنفيذ…" : submitLabel}
