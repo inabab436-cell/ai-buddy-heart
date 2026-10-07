@@ -464,13 +464,9 @@ export const createMerchantOrder = createServerFn({ method: "POST" })
         color: it.color ?? null, size: it.size ?? null,
       };
     });
-    const offerQuote = await quoteOrderOffers(
-      admin, userId, { customer_phone: data.customer_phone.trim() }, items, [],
-    );
-    const subtotal = offerQuote.subtotal;
-    const discount = offerQuote.discount;
+    const subtotal = Math.round(items.reduce((n, i) => n + i.line_total, 0) * 100) / 100;
     const shipping = Math.max(0, Number(data.shipping_cost) || 0);
-    const total = Math.max(0, Math.round((subtotal - discount + shipping) * 100) / 100);
+    const total = Math.round((subtotal + shipping) * 100) / 100;
 
     let orderNumber = newOrderNumber();
     for (let attempt = 1; ; attempt++) {
@@ -503,64 +499,10 @@ export const createMerchantOrder = createServerFn({ method: "POST" })
       throw new Error(msg || "تعذّر إنشاء الطلب.");
     }
     await admin.from("orders")
-      .update({
-        total_price: total, subtotal_price: subtotal, discount_amount: discount,
-        shipping_cost: shipping, applied_offer_ids: offerQuote.appliedIds,
-      })
+      .update({ total_price: total, subtotal_price: subtotal, discount_amount: 0, shipping_cost: shipping })
       .eq("order_number", orderNumber).eq("merchant_id", merchantId);
     return { ok: true, order_number: orderNumber };
   });
-
-/**
- * Prices merchant-entered lines through the same offer engine as the store.
- * Mutates `items` unit prices to the catalogue/variant price the engine used.
- * New offers (not already held by the order) must win a seat atomically.
- */
-async function quoteOrderOffers(
-  admin: any,
-  userId: string,
-  order: Record<string, unknown>,
-  items: Array<Record<string, any>>,
-  prevApplied: string[],
-): Promise<{ subtotal: number; discount: number; appliedIds: string[] }> {
-  const { quoteManualOrder, claimOfferSeats } = await import("@/lib/manual-order-offers.server");
-  const { customerKeyOf } = await import("@/lib/offer-redemptions.server");
-  const keys = [
-    order.customer_id ? `c:${order.customer_id}` : "",
-    order.customer_phone ? `p:${String(order.customer_phone).trim()}` : "",
-    order.conversation_id ? `v:${order.conversation_id}` : "",
-  ].filter(Boolean);
-  const input = items.map((i) => ({
-    product_name: i.product_name, color: i.color, size: i.size, quantity: i.quantity,
-  }));
-  let q = await quoteManualOrder(admin, { userId, customerKeys: keys, items: input, keepOfferIds: prevApplied });
-  const fresh = q.applied_offers.map((a) => a.offer_id).filter((id) => !prevApplied.includes(id));
-  if (fresh.length && order.id) {
-    const granted = await claimOfferSeats(admin, {
-      offerIds: fresh, customerKey: customerKeyOf(order), orderId: String(order.id),
-    });
-    const allowed = [...prevApplied, ...granted];
-    if (granted.length < fresh.length) {
-      q = await quoteManualOrder(admin, {
-        userId, customerKeys: keys, items: input, keepOfferIds: prevApplied, restrictToOfferIds: allowed,
-      });
-    }
-  }
-  q.pricing.items.forEach((p, idx) => {
-    const it = items[idx];
-    if (it && p.unit_price > 0) {
-      it.price = p.unit_price;
-      it.unit_price = p.unit_price;
-      it.line_total = p.line_total;
-    }
-  });
-  const subtotal = Math.round(items.reduce((n, i) => n + Number(i.line_total || 0), 0) * 100) / 100;
-  return {
-    subtotal,
-    discount: Math.min(q.discount_total, subtotal),
-    appliedIds: q.applied_offers.map((a) => a.offer_id),
-  };
-}
 
 // ---------- EDIT ORDER DETAILS -------------------------------------------
 export interface OrderDetailsPatch {
@@ -635,8 +577,7 @@ export const editOrderItems = createServerFn({ method: "POST" })
     const admin = getSupabaseAdmin();
 
     const { data: ord } = await admin.from("orders")
-      .select("id, discount_amount, shipping_cost, customer_id, customer_phone, conversation_id, applied_offer_ids")
-      .eq("id", data.id).eq("merchant_id", merchantId).maybeSingle();
+      .select("discount_amount, shipping_cost").eq("id", data.id).eq("merchant_id", merchantId).maybeSingle();
     if (!ord) throw new Error("الطلب غير موجود.");
 
     const ids = [...new Set(data.items.map((i) => i.product_id))];
@@ -655,14 +596,8 @@ export const editOrderItems = createServerFn({ method: "POST" })
         color: it.color ?? null, size: it.size ?? null,
       };
     });
-    // Offers are re-evaluated on the NEW basket with all their conditions
-    // (minimum, scope, dates, seats, once-per-customer). Offers this order
-    // already holds stay eligible for it.
-    const prevApplied: string[] = Array.isArray((ord as any).applied_offer_ids)
-      ? (ord as any).applied_offer_ids.map(String) : [];
-    const offerQuote = await quoteOrderOffers(admin, userId, ord as any, items, prevApplied);
-    const subtotal = offerQuote.subtotal;
-    const discount = offerQuote.discount;
+    const subtotal = Math.round(items.reduce((n, i) => n + i.line_total, 0) * 100) / 100;
+    const discount = Number((ord as any).discount_amount ?? 0) || 0;
     const shipping = Number((ord as any).shipping_cost ?? 0) || 0;
     const total = Math.max(0, Math.round((subtotal - discount + shipping) * 100) / 100);
 
@@ -686,8 +621,5 @@ export const editOrderItems = createServerFn({ method: "POST" })
       }
       throw new Error(r.error === "cancelled" ? "لا يمكن تعديل طلب ملغي." : "الطلب غير موجود.");
     }
-    await admin.from("orders")
-      .update({ discount_amount: discount, applied_offer_ids: offerQuote.appliedIds })
-      .eq("id", data.id).eq("merchant_id", merchantId);
     return { ok: true, stock_updated: Boolean(r.stock_updated) };
   });
