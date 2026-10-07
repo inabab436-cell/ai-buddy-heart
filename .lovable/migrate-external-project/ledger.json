@@ -1,0 +1,12 @@
+{
+  "source": "github:https://github.com/inabab436-cell/product-15.git",
+  "capabilities": [
+    { "capability": "app code (TanStack Start storefront + merchant dashboard)", "source": "repo src/", "outcome": "copied in place", "status": "done", "next_action": "verify preview" },
+    { "capability": "database schema (31+ tables, 60 migrations in db/)", "source": "db/*.sql", "outcome": "kept as reference; user connects their own Supabase via CUPAI_APP_SB_* secrets", "status": "pending", "next_action": "user adds CUPAI_APP_SB_URL, CUPAI_APP_SB_ANON, CUPAI_APP_SB_SERVICE secrets" },
+    { "capability": "AI chat agent / vision", "source": "src/lib/*.server.ts", "outcome": "defaults to Lovable AI gateway (LOVABLE_API_KEY managed)", "status": "done", "next_action": "none" },
+    { "capability": "email (EmailJS)", "source": "src/lib/emailjs.server.ts", "outcome": "preserved; needs EMAILJS_* secrets", "status": "pending", "next_action": "user adds EMAILJS_SERVICE_ID, EMAILJS_PUBLIC_KEY, EMAILJS_PRIVATE_KEY, EMAILJS_TEMPLATE_SIGNUP, EMAILJS_TEMPLATE_RESET if email is wanted" },
+    { "capability": "session signing", "source": "src/lib/session.server.ts", "outcome": "needs CUPAI_APP_SESSION_SECRET", "status": "pending", "next_action": "user adds CUPAI_APP_SESSION_SECRET" },
+    { "capability": "existing records/users", "source": "none attached", "outcome": "no record export in repo", "status": "pending", "next_action": "request CSV/JSON exports after preview" },
+    { "capability": "push notifications (firebase-messaging-sw.js)", "source": "public/", "outcome": "copied", "status": "done", "next_action": "none" }
+  ]
+}
