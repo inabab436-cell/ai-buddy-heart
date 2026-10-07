@@ -84,7 +84,9 @@ function fmtMoney(n: number): string {
  * one row per order, one column per data type, styled and wrapped.
  */
 async function exportOrdersToXlsx(orders: OrderRow[]) {
-  // Browser-only build: keeps the Node version out of the live server bundle.
+  // Browser-only: the SSR guard lets the bundler drop exceljs from the server
+  // build entirely (its require() shim crashes the Worker at startup).
+  if (import.meta.env.SSR) throw new Error("Excel export is browser-only");
   // @ts-expect-error no types for the prebuilt browser bundle
   const mod = await import("exceljs/dist/exceljs.min.js");
   const ExcelJS = (mod.default ?? mod) as typeof import("exceljs");
