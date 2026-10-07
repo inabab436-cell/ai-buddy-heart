@@ -138,7 +138,7 @@ function LoginPage() {
       subtitle={codeSent ? `أدخل الرمز المرسل إلى ${email}` : "مرحبًا بك في Cupai"}
     >
       <form onSubmit={onSubmit} className="space-y-4" dir="rtl">
-        {mode === "signup" ? (
+        {mode === "signup" && !codeSent ? (
           <div className="space-y-1.5">
             <Label htmlFor="name">الاسم</Label>
             <Input
@@ -154,6 +154,7 @@ function LoginPage() {
             />
           </div>
         ) : null}
+        {!codeSent ? (
         <div className="space-y-1.5">
           <Label htmlFor="email">البريد الإلكتروني</Label>
           <Input
@@ -168,9 +169,10 @@ function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
+        ) : null}
 
         {codeSent ? (
-          <>
+          <div className="space-y-4 rounded-xl border border-border bg-muted/40 p-4">
             <div className="space-y-1.5">
               <Label htmlFor="code">رمز التحقق</Label>
               <Input
@@ -185,10 +187,10 @@ function LoginPage() {
               />
             </div>
             <SpamNotice />
-          </>
+          </div>
         ) : null}
 
-        {(mode !== "reset" || codeSent) ? (
+        {(mode === "login" || (mode === "signup" && !codeSent) || (mode === "reset" && codeSent)) ? (
           <div className="space-y-1.5">
             <Label htmlFor="password">
               {mode === "login"
@@ -230,6 +232,11 @@ function LoginPage() {
         {codeSent ? (
           <button type="button" onClick={resend} disabled={busy} className="w-full text-sm text-primary hover:underline">
             إعادة إرسال الرمز
+          </button>
+        ) : null}
+        {codeSent ? (
+          <button type="button" onClick={() => { setCodeSent(false); setCode(""); setError(null); setInfo(null); }} disabled={busy} className="w-full text-sm text-muted-foreground hover:underline">
+            رجوع لتعديل البيانات
           </button>
         ) : null}
 
