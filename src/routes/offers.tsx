@@ -416,7 +416,7 @@ function OffersPage() {
               
             </div>
             <div className="space-y-1.5">
-              <Label>العرض على إيه؟</Label>
+              <Label>ما الذي يشمله العرض؟</Label>
               <select
                 className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
                 value={form.scope}
